@@ -5,7 +5,7 @@ def f(x):
 
 #f'(x)
 def f_(x):
-  return -4 * np.sin(𝑥) - 4*𝑥 * np.cos(𝑥)
+  return -4 * np.sin(𝑥) - 4*𝑥 * np.cos(𝑥) 
 #f''(x)
 def f__(x):
   return (-8*np.cos(𝑥)) + (4*𝑥 * np.sin(𝑥))
@@ -70,37 +70,42 @@ class PSO:
   #Step 2 menentukan F(xi)
   def detFxi(self):
     self.fxi = [f(x) for x in self.x]
-    
+
   #step 3 Menentukan Gbest
   def detGBest(self):
-    self.gBest = self.x[self.fxi.index(max(self.fxi))]
+    self.gBest = self.x[self.fxi.index(min(self.fxi))]
 
-  #Step 4 Menentukan PBest 
+  #Step 4 PBest 
   def detPBest(self):
-    if self.pBest == []: #untuk iterasi 1
+    if self.pBest == []: #iter 1
       self.pBest = [x for x in self.x]
-    else: #untuk iterasi selanjutnya
+    else: #and so on
       for i in range(len(self.x)):
-        if f(self.x[i]) > f(self.oldX[i]):
+        if f(self.x[i]) <= f(self.oldX[i]):
           self.pBest[i] = self.x[i]
         else:
           self.pBest[i] = self.oldX[i]
+
   
-  #Step 5 Memperbaharui nilai v
+  #Step 5 Update nilai v
   def updateV(self):
     for i in range(len(self.v1)):
-      self.v1[i] = (self.w * self.v1[i]) + (self.c[0]*self.r[0]*(self.pBest[i] - self.x[i])) + (self.c[1]*self.r[1]*(self.gBest - self.x[i]))
-
+      self.v1[i] = (self.w * self.v1[i]) + (self.c[0]*(self.r[0]*(self.pBest[i] - self.x[i]))) + (self.c[1]*(self.r[1]*(self.gBest - self.x[i])))
+      print(f"v{i+1} = {self.v1}")
   #Step 6 Memperbaharui nilai x
   def updateX(self):
     for j in range(len(self.oldX)):
       self.oldX[j] = self.x[j]
     for i in range(len(self.x)):
       self.x[i] = self.x[i] + self.v1[i]
+    
+  def fx(self):
+    fx = [f(self.x[i]) for i in range(len(self.x))]
+    print(f"f(x) =",fx)
 
   def solve(self):
     print(f"x : {self.x}")
-    print(f"f(x) = {f(self.x)}")
+    self.fx()
     for i in range(self.n):
       print(f"iter : {i+1}=======================================================")
       self.detFxi()
@@ -109,7 +114,7 @@ class PSO:
       self.updateV()
       self.updateX()
       print(f"x : {self.x}")
-    print(f"f(x) = {f(self.x)}")
+      self.fx()
 
 #main
 print("Newton : ")
@@ -121,5 +126,5 @@ steepest = SteepestDescent(np.pi/2, 1/4, 3)
 steepest.solve()
 
 print("\nPSO : ")
-pso = PSO(np.array([round(0), np.pi/2, np.pi]), 0, [1/2, 1], [1/2,1/2], 1, 3)
+pso = PSO([0, np.pi/2, np.pi], 0, [1/2, 1], [1/2,1/2], 1, 3)
 pso.solve()
